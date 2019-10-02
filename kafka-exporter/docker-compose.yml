@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  kafka-exporter:
+    image: ${DOCKER_REGISTRY-}kafkaexporter
+    build:
+      context: .
+      dockerfile: kafka-exporter/Dockerfile
+    environment:
+      verif_delay: 1000
+
+  prometheus:
+    image: prom/prometheus:v2.12.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:6.4.0
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana
